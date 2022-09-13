@@ -6,7 +6,13 @@ import { SSR_CACHE_HANDLER, API_CACHE_HANDLER, NEXT_CACHE_HANDLER } from './laye
 export default new Router()
   /* @ts-ignore */
   .prerender(getPrerenderRequests)
-  .match('/api/:path*', API_CACHE_HANDLER)
+  .match('/api/:path*',({ removeUpstreamResponseHeader, cache}) => {
+      removeUpstreamResponseHeader('cache-control')
+      cache({
+          browser: false,
+          edge: false,
+      })
+  })
   .match('/category/:name', SSR_CACHE_HANDLER)
   .match('/product/:id', SSR_CACHE_HANDLER)
   .match('/_next/data/:build/category/:name.json', NEXT_CACHE_HANDLER)
